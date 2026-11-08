@@ -5,14 +5,16 @@ Analysis of 10,000 student sessions with an AI assistant (student level, discipl
 ## Key findings
 - **Reuse is 70.6%**, so a model that always predicts "reuse" is already 70.6% accurate. Plain accuracy (and the F1 of the positive class, ~0.83 even for that dummy) is misleading here, so models are judged by ROC AUC and balanced accuracy against a dummy baseline.
 - The **only variable clearly linked to reuse is `FinalOutcome`**: about 80% reuse after "Assignment Completed" / "Idea Drafted" vs about 40% after "Confused" / "Gave Up" (Cramér's V = 0.37).
-- Student level, discipline, session length, prompts, AI assistance level and **satisfaction show no relation to reuse** (all p > 0.2). Task type has only a small effect (Cramér's V = 0.06; research 64% vs coding 74% reuse).
+- Student level, discipline, session length, prompts, AI assistance level and **satisfaction show no relation to reuse** (all p > 0.2). Once `FinalOutcome` is known, **no other variable adds information** (likelihood-ratio test of all of them together: p = 0.17).
+- **Task type matters only through the outcome**: it is related to how sessions end (Cramér's V = 0.14; bad-outcome rate from 16% for Writing to 37% for Research).
 - Satisfaction follows the AI assistance level (Spearman 0.77) but does not translate into reuse.
 - Best models reach **CV ROC AUC = 0.68** (accuracy 0.75 vs 0.71 baseline), and virtually all of that comes from `FinalOutcome`. Without outcome and satisfaction the AUC is 0.53 and accuracy equals the baseline: barely above chance (a faint signal from task type).
 
 ## What this project does
 - Data quality checks and a justified **no outlier removal** decision: the IQR rule would delete 861 valid rows (8.6%), including *every* session with AI assistance level 1 on a 1-5 rating scale.
 - EDA of usage patterns, satisfaction drivers, and reuse rate per group with 95% confidence intervals.
-- Statistical tests: chi-square with Cramér's V (categorical) and Spearman (numeric).
+- Statistical tests: chi-square with Cramér's V (categorical), Spearman (numeric), and likelihood-ratio tests that control for the outcome.
+- A check of what drives a bad outcome and whether the explanatory variables are independent of each other (they are, which is unusual for real data).
 - Leak-aware modelling: `Pipeline`, stratified 5-fold CV, **dummy baseline**, three feature sets (all / without outcome and satisfaction / `FinalOutcome` only), then a held-out test and permutation importance.
 
 ## Limitations
